@@ -171,6 +171,11 @@ def post_invited_code(request):
 @api_view(['GET'])
 def who_was_invited(request):
     """Просмотр приглашенных пользователей"""
+    
+    if 'Authorization' not in request.COOKIES:
+        logger.warning("Authentication credentials were not provided.")
+        return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
+    
     try:
         payload = jwt.decode(request.COOKIES['Authorization'][7:], settings.SECRET_KEY, algorithms=["HS256"])
         user_id = payload.get('user_id')
