@@ -21,6 +21,7 @@ from referrals import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path('', views.index, name='index'),
     path('auth/send_code/', views.send_code),
     path('auth/check_code/', views.check_code),
     path('invite/', views.post_invited_code),

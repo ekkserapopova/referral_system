@@ -15,6 +15,11 @@ from referral_system import settings
 
 from .models import UserProfile, VerificationCodes
 from .serializers import UserSerializer, VerificationCodesSerializer
+from django.shortcuts import render
+
+def index(request):
+    return render(request, 'index.html')  # отображает ваш HTML файл
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

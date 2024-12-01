@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система приглашений</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        input {
+            margin: 10px 0;
+            padding: 10px;
+            width: 250px;
+        }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+        }
+        .result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Реферальная система</h1>
+
+    <!-- Форма для ввода номера телефона и отправки кода -->
+    <div>
+        <h2>Шаг 1: Введите номер телефона</h2>
+        <input type="text" id="phone_number" placeholder="Введите номер телефона">
+        <button onclick="sendCode()">Отправить код</button>
+    </div>
+
+    <!-- Форма для проверки кода -->
+    <div>
+        <h2>Шаг 2: Введите код</h2>
+        <input type="text" id="verification_code" placeholder="Введите код">
+        <button onclick="checkCode()">Проверить код</button>
+    </div>
+
+    <!-- Форма для ввода кода приглашения -->
+    <div>
+        <h2>Шаг 3: Введите код приглашения</h2>
+        <input type="text" id="invited_code" placeholder="Введите код приглашения">
+        <button onclick="postInvitedCode()">Добавить приглашение</button>
+    </div>
+
+    <div class="result" id="result"></div>
+
+    <script>
+        const resultDiv = document.getElementById('result');
+
+        function sendCode() {
+            const phoneNumber = document.getElementById('phone_number').value;
+            fetch('/auth/send_code/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ phone_number: phoneNumber }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                resultDiv.innerHTML = `Код отправлен на номер ${phoneNumber}. Код: ${data.code}`;
+            })
+            .catch(error => {
+                resultDiv.innerHTML = 'Ошибка при отправке кода.';
+            });
+        }
+
+        function checkCode() {
+            const phoneNumber = document.getElementById('phone_number').value;
+            const verificationCode = document.getElementById('verification_code').value;
+            fetch('/auth/check_code/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ phone_number: phoneNumber, verification_code: verificationCode }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                resultDiv.innerHTML = `Код проверен успешно. Ваш код клиента: ${data.code}`;
+            })
+            .catch(error => {
+                resultDiv.innerHTML = 'Ошибка при проверке кода.';
+            });
+        }
+
+        function postInvitedCode() {
+            const invitedCode = document.getElementById('invited_code').value;
+            fetch('/invite/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ invited_code: invitedCode }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                resultDiv.innerHTML = `Вы были приглашены пользователем с кодом: ${data.invited_code}`;
+            })
+            .catch(error => {
+                resultDiv.innerHTML = 'Ошибка при добавлении кода приглашения.';
+            });
+        }
+    </script>
+</body>
+</html>
