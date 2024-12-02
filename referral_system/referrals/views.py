@@ -69,7 +69,12 @@ def check_code(request):
     """Проверяет код, отправленный на номер телефона"""
     phone_number = request.data.get('phone_number')
     code = request.data.get('verification_code')
-    
+    if not phone_number:
+        logger.warning("Phone number is missing")
+        return Response({"detail": "Phone number is required."}, status=status.HTTP_400_BAD_REQUEST)
+    if not code:
+        logger.warning("Code is missing")
+        return Response({"detail": "Code is required."}, status=status.HTTP_400_BAD_REQUEST)
     try:
         ver_code_obj = VerificationCodes.objects.get(phone=phone_number)
         logger.info(f"Verification code obj for phone {phone_number} found.")
@@ -115,7 +120,7 @@ def check_code(request):
         
     except:
         logger.error(f"Verification code for phone {phone_number} does not exist.")
-        return Response({'error': 'Invalid phone number'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'Verification code does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
 
     
 @api_view(['POST'])
