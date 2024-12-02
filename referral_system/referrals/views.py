@@ -90,10 +90,17 @@ def check_code(request):
             return Response({'error': 'Invalid code'}, status=status.HTTP_400_BAD_REQUEST)
         
         logger.info(f"Code for phone {phone_number} validated successfully.")
-        client_code = generate_code()
         
-        user, _= UserProfile.objects.get_or_create(username=phone_number, phone_number=phone_number)
-        logger.debug(f"Generated client code: {client_code}")
+        
+        user, created = UserProfile.objects.get_or_create(username=phone_number, phone_number=phone_number)
+        
+        logger.debug(f"New user? {not created}")
+        if not created:
+            client_code = user.invited_code
+            logger.debug(f"Client code: {client_code}")
+        else:
+            client_code = generate_code()
+            logger.debug(f"Generated client code: {client_code}")
 
         serializer = UserSerializer(user, data={'username':phone_number,'phone_number':phone_number, 'invited_code':client_code})
         

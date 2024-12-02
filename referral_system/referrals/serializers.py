@@ -4,7 +4,7 @@ from .models import UserProfile, VerificationCodes
 class UserSerializer(serializers.ModelSerializer):
      class Meta:
         model = UserProfile
-        fields = ['username', 'phone_number', 'invited_code', 'invited_by']
+        fields = ['id', 'username', 'phone_number', 'invited_code', 'invited_by']
         
 class VerificationCodesSerializer(serializers.ModelSerializer):
     class Meta:
